@@ -20,13 +20,13 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 			flex: 1;
 			margin: 10px;
 			height: 600px;
-			width: 600px;
+			width: 650px;
 		}
 
 		.videoContainer {
 			margin: 0px auto;
-			width: 600px;
-			height: 330px;
+			width: 650px;
+			height: 430px;
 			border: 2px #0F0F0F solid;
 		}
 
@@ -58,7 +58,7 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 		.volumeView {
 			--volume: 0%;
 			margin: 0px auto;
-			width: 600px;
+			width: 650px;
 			height: 15px;
 			background-color: #333;
 			border: 2px #0F0F0F solid;
@@ -212,7 +212,7 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 		<div class="flex-child leftDiv">
 			<div style="text-align:center; height: 50px;">
 				<!-- <button class="videoButton" onclick="openFullscreen();">Full Screen</button> -->
-				<button class="videoButton" onclick="changeInput();">Switch Active Camera</button>
+				<button class="videoButton" onclick="changeInput();">⛶ Switch Active Camera ⛶</button>
 				<!-- <button class="videoButton" onclick="setMirror();">Mirror Video</button> -->
 			</div>
 			<div id="videoContainer" class="videoContainer" style="background-color: #303030;">
@@ -226,7 +226,7 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 				<audio id="sound1" src="left.ogg" preload="auto"></audio>
 				<audio id="sound2" src="right.ogg" preload="auto"></audio>
 				<button class = "videoButton" onclick="document.getElementById('sound1').play();">⚞ Test Left</button>
-				<button class="videoButton" id="start">Test Microphone</button>
+				<button class="videoButton" id="start">☉ Test Microphone ☉</button>
 				<button class = "videoButton" onclick="document.getElementById('sound2').play();">Test Right ⚟</button>
 			</div>
 
@@ -276,7 +276,7 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 			</script>
 
 
-			<canvas id="mycanvas" width="600px" height="300px"
+			<canvas id="mycanvas" width="650px" height="400px"
 				style="background-color: #666; border: 2px #0F0F0F solid;">
 				Canvas element not supported.
 			</canvas>
