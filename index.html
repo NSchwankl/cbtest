@@ -26,7 +26,7 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 		.videoContainer {
 			margin: 0px auto;
 			width: 650px;
-			height: 430px;
+			height: 429px;
 			border: 2px #0F0F0F solid;
 		}
 
@@ -46,9 +46,11 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 
 		.videoButton {
 			background-color: #666;
+			height: 40px;
 			color: black;
 			padding: 5px;
 			text-align: center;
+			vertical-align: middle;
 			font-size: 16px;
 			margin: 4px 2px;
 			border-radius: 12px;
@@ -212,7 +214,7 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 		<div class="flex-child leftDiv">
 			<div style="text-align:center; height: 50px;">
 				<!-- <button class="videoButton" onclick="openFullscreen();">Full Screen</button> -->
-				<button class="videoButton" onclick="changeInput();">⛶ Switch Active Camera ⛶</button>
+				<button class="videoButton" onclick="changeInput();">Switch Active Camera</button>
 				<!-- <button class="videoButton" onclick="setMirror();">Mirror Video</button> -->
 			</div>
 			<div id="videoContainer" class="videoContainer" style="background-color: #303030;">
@@ -225,9 +227,9 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 			<div style="text-align:center; height: 50px;">
 				<audio id="sound1" src="left.ogg" preload="auto"></audio>
 				<audio id="sound2" src="right.ogg" preload="auto"></audio>
-				<button class = "videoButton" onclick="document.getElementById('sound1').play();">⚞ Test Left</button>
-				<button class="videoButton" id="start">☉ Test Microphone ☉</button>
-				<button class = "videoButton" onclick="document.getElementById('sound2').play();">Test Right ⚟</button>
+				<button class = "videoButton" onclick="document.getElementById('sound1').play();">▶ Test Left</button>
+				<button class="videoButton" id="start">Test Microphone</button>
+				<button class = "videoButton" onclick="document.getElementById('sound2').play();">Test Right ◀</button>
 			</div>
 
 			<!-- Audio Bar code from https://stackoverflow.com/a/64650826 -->
