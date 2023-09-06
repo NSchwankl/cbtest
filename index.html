@@ -213,7 +213,7 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 <body onload="onPageLoad()" style="background-color: #303030;">
 	<div class="flex-container">
 		<div class="flex-child leftDiv">
-			<div style="text-align:center; height: 50px;">
+			<div style="text-align:center; height: 50px; margin-bottom: 10px;">
 				<!-- <button class="videoButton" onclick="openFullscreen();">Full Screen</button> -->
 				<button class="videoButton" onclick="changeInput();">Switch Active Camera</button>
 				<!-- <button class="videoButton" onclick="setMirror();">Mirror Video</button> -->
@@ -225,7 +225,7 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 		<div class="flex-child rightDiv" style="text-align:center;">
 
 			<!-- Audio Checks from https://www.audiocheck.net/audiotests_stereo.php -->
-			<div style="text-align:center; height: 50px;">
+			<div style="text-align:center; height: 50px; margin-bottom: 10px;">
 				<audio id="sound1" src="left.ogg" preload="auto"></audio>
 				<audio id="sound2" src="right.ogg" preload="auto"></audio>
 				<button class = "videoButton" onclick="document.getElementById('sound1').play();">▶ Test Left</button>
