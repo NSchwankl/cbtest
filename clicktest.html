@@ -1,28 +1,66 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <title>HTML5 input </title>
     <script type='text/javascript'>
- 
-    function init() {
-      var touchzone = document.getElementById("mycanvas");
-      touchzone.addEventListener("touchstart", draw, false);
-    }
- 
-    function draw() {
-      var canvas = document.getElementById('mycanvas');
- 
-      if(canvas.getContext) {
-        var ctx = canvas.getContext("2d");
-        ctx.fillRect (event.touches[0].pageX, event.touches[0].pageY, 5, 5);
-      }
-    }
+
+        function init() {
+            var touchzone = document.getElementById("mycanvas");
+            touchzone.addEventListener("touchstart", draw, false);
+            touchzone.addEventListener("mousedown", drawMouse, false)
+        }
+
+        function draw(event) {
+
+            var canvas = document.getElementById('mycanvas');
+            var offset = getOffset(canvas);
+            if (canvas.getContext) {
+                var ctx = canvas.getContext("2d");
+
+
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(event.touches[0].pageX - offset.left, event.touches[0].pageY - offset.top, 5, 5);
+
+
+            }
+        }
+
+        function drawMouse(event) {
+
+            var canvas = document.getElementById('mycanvas');
+            var offset = getOffset(canvas);
+
+            if (canvas.getContext) {
+                var ctx = canvas.getContext("2d");
+
+                ctx.fillStyle = '#0000ff';
+                ctx.fillRect(event.pageX - offset.left, event.pageY - offset.top, 5, 5);
+
+            }
+        }
+
+        function getOffset(obj) {
+            var offsetLeft = 0;
+            var offsetTop = 0;
+            do {
+                if (!isNaN(obj.offsetLeft)) {
+                    offsetLeft += obj.offsetLeft;
+                }
+                if (!isNaN(obj.offsetTop)) {
+                    offsetTop += obj.offsetTop;
+                }
+            } while (obj = obj.offsetParent);
+            return { left: offsetLeft, top: offsetTop };
+        }
     </script>
-  
-  </head>
-  <body onload="init()">
+
+</head>
+
+<body onload="init()">
     <canvas id="mycanvas" width="500" height="500">
-      Canvas element not supported.
+        Canvas element not supported.
     </canvas>
-  </body>
+</body>
+
 </html>
