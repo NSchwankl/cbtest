@@ -20,13 +20,14 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 			flex: 1;
 			margin: 10px;
 			height: 600px;
-			width: 500px;
+			width: 600px;
 		}
 
 		.videoContainer {
 			margin: 0px auto;
-			width: 500px;
-			height: 500px;
+			width: 600px;
+			height: 330px;
+			border: 2px #0F0F0F solid;
 		}
 
 		.videoUnmirrored {
@@ -57,18 +58,16 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 		.volumeView {
 			--volume: 0%;
 			margin: 0px auto;
-			width: 500px;
+			width: 600px;
 			height: 15px;
 			background-color: #333;
+			border: 2px #0F0F0F solid;
 		}
 
-		.volumeView::before {
+		.volumeView2 {
 			content: '';
-			position: absolute;
-			top: 0;
-			bottom: 0;
-			left: 0;
 			width: var(--volume);
+			height: 100%;
 			background-color: blue;
 			transition: width 100ms linear;
 		}
@@ -204,45 +203,6 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 			return { left: offsetLeft, top: offsetTop };
 		}
 
-		(async () => {
-			let volumeCallback = null;
-			let volumeInterval = null;
-			const volumeVisualizer = document.getElementById('volume-visualizer');
-			const startButton = document.getElementById('start');
-			const stopButton = document.getElementById('stop');
-			const audioStream = await navigator.mediaDevices.getUserMedia({
-				audio: {
-					echoCancellation: true
-				}
-			});
-			const audioContext = new AudioContext();
-			const audioSource = audioContext.createMediaStreamSource(audioStream);
-			const analyser = audioContext.createAnalyser();
-			analyser.fftSize = 512;
-			analyser.minDecibels = -127;
-			analyser.maxDecibels = 0;
-			analyser.smoothingTimeConstant = 0.4;
-			audioSource.connect(analyser);
-			const volumes = new Uint8Array(analyser.frequencyBinCount);
-			volumeCallback = () => {
-				analyser.getByteFrequencyData(volumes);
-				let volumeSum = 0;
-				for (const volume of volumes)
-					volumeSum += volume;
-				const averageVolume = volumeSum / volumes.length;
-				// Value range: 127 = analyser.maxDecibels - analyser.minDecibels;
-				volumeVisualizer.style.setProperty('--volume', (averageVolume * 100 / 127) + '%');
-			};
-			// Use
-			addEventListener('keyup', (e) => {
-				// Updating every 100ms (should be same as CSS transition speed)
-				if (e.key === 'Escape') {
-					if (volumeCallback !== null && volumeInterval === null)
-						volumeInterval = setInterval(volumeCallback, 100);
-				}
-			});
-		})();
-
 	</script>
 </head>
 <!-- The (very few) HTML elements that make up the page - two buttons and a video preview window. -->
@@ -251,20 +211,73 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 	<div class="flex-container">
 		<div class="flex-child leftDiv">
 			<div style="text-align:center; height: 50px;">
-				<button class="videoButton" onclick="openFullscreen();">Full Screen</button>
-				<button class="videoButton" onclick="changeInput();">Change Input</button>
-				<button class="videoButton" onclick="setMirror();">Mirror Video</button>
+				<!-- <button class="videoButton" onclick="openFullscreen();">Full Screen</button> -->
+				<button class="videoButton" onclick="changeInput();">Switch Active Camera</button>
+				<!-- <button class="videoButton" onclick="setMirror();">Mirror Video</button> -->
 			</div>
 			<div id="videoContainer" class="videoContainer" style="background-color: #303030;">
 				<video autoplay="true" id="videoElement" class="videoUnmirrored"></video>
 			</div>
 		</div>
 		<div class="flex-child rightDiv" style="text-align:center;">
+
+			<!-- Audio Checks from https://www.audiocheck.net/audiotests_stereo.php -->
 			<div style="text-align:center; height: 50px;">
-				<button class="videoButton">Click and Touch Test Area</button>
+				<audio id="sound1" src="left.ogg" preload="auto"></audio>
+				<audio id="sound2" src="right.ogg" preload="auto"></audio>
+				<button class = "videoButton" onclick="document.getElementById('sound1').play();">⚞ Test Left</button>
+				<button class="videoButton" id="start">Test Microphone</button>
+				<button class = "videoButton" onclick="document.getElementById('sound2').play();">Test Right ⚟</button>
 			</div>
-			<div class="volumeView" id="volume-visualizer"></div>
-			<canvas id="mycanvas" width="500px" height="500px" style="background-color: #666;">
+
+			<!-- Audio Bar code from https://stackoverflow.com/a/64650826 -->
+
+			<div class="volumeView" id="volume-visualizer" style="margin-bottom: 10px;">
+				<div class="volumeView2" id="volume-visualizer"></div>
+			</div>
+
+			<script>
+
+				(async () => {
+					let volumeCallback = null;
+					let volumeInterval = null;
+					const volumeVisualizer = document.getElementById('volume-visualizer');
+					const startButton = document.getElementById('start');
+					const audioStream = await navigator.mediaDevices.getUserMedia({
+						audio: {
+							echoCancellation: true
+						}
+					});
+					const audioContext = new AudioContext();
+					const audioSource = audioContext.createMediaStreamSource(audioStream);
+					const analyser = audioContext.createAnalyser();
+					analyser.fftSize = 512;
+					analyser.minDecibels = -127;
+					analyser.maxDecibels = 0;
+					analyser.smoothingTimeConstant = 0.4;
+					audioSource.connect(analyser);
+					const volumes = new Uint8Array(analyser.frequencyBinCount);
+					volumeCallback = () => {
+						analyser.getByteFrequencyData(volumes);
+						let volumeSum = 0;
+						for (const volume of volumes)
+							volumeSum += volume;
+						const averageVolume = volumeSum / volumes.length;
+						// Value range: 127 = analyser.maxDecibels - analyser.minDecibels;
+						volumeVisualizer.style.setProperty('--volume', (averageVolume * 100 / 127) + '%');
+					};
+
+					startButton.addEventListener('click', () => {
+						// Updating every 100ms (should be same as CSS transition speed)
+						if (volumeCallback !== null && volumeInterval === null)
+							volumeInterval = setInterval(volumeCallback, 100);
+					});
+				})();
+			</script>
+
+
+			<canvas id="mycanvas" width="600px" height="300px"
+				style="background-color: #666; border: 2px #0F0F0F solid;">
 				Canvas element not supported.
 			</canvas>
 		</div>
