@@ -6,76 +6,96 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 	https://www.digitalocean.com/community/tutorials/front-and-rear-camera-access-with-javascripts-getusermedia
 -->
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>FullScreen Viewer</title>
-		<style>
-			.videoContainer {
-				margin: 0px auto;
-				width: 64%;
-				height: 100%;
-				border: 0px #FFF solid;
-			}
-			.videoUnmirrored {
-				width: 100%;
-				height: 100%;
-				background-color: #666;
-			}
-			.videoMirrored {
-				width: 100%;
-				height: 100%;
-				background-color: #666;
-				-webkit-transform: scaleX(-1);
-				transform: scaleX(-1);
-			}
-			.videoButton {
-				background-color: #4CAF50;
-				color: white;
-				padding: 5px;
-				text-align: center;
-				font-size: 16px;
-				margin: 4px 2px;
-				border-radius: 12px;
-			}
-		</style>
-		<script>
-			var video;
-			var videoDevices;
-			var videoMirrored;
-			var currentVideoStream;
-			var currentDeviceNumber;
 
-			// This is where main executation starts, when the page is loaded and ready.
-			function onPageLoad() {
-				video = document.querySelector("#videoElement");
-				videoMirrored = false;
-				currentDeviceNumber = 0;
-				currentVideoStream = "";
-				// Before we can get a list of media devices we need to request media permissions from the browser...
-				navigator.mediaDevices.getUserMedia({video:{width:{ideal:4096},height:{ideal:2160}}})
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>FullScreen Viewer</title>
+	<style>
+		.flex-container {
+			display: flex;
+		}
+
+		.flex-child {
+			flex: 1;
+			border: 2px solid yellow;
+			margin: 10px;
+			height: 600px;
+			width: 500px;
+		}
+
+		.videoContainer {
+			margin: 0px auto;
+			width: 500px;
+			height: 50%;
+		}
+
+		.videoUnmirrored {
+			width: 100%;
+			height: 100%;
+			background-color: #666;
+		}
+
+		.videoMirrored {
+			width: 100%;
+			height: 100%;
+			background-color: #666;
+			-webkit-transform: scaleX(-1);
+			transform: scaleX(-1);
+		}
+
+		.videoButton {
+			background-color: #666;
+			color: black;
+			padding: 5px;
+			text-align: center;
+			font-size: 16px;
+			margin: 4px 2px;
+			border-radius: 12px;
+			border: 2px #0F0F0F solid;
+		}
+	</style>
+	<script>
+		var video;
+		var videoDevices;
+		var videoMirrored;
+		var currentVideoStream;
+		var currentDeviceNumber;
+
+		// This is where main executation starts, when the page is loaded and ready.
+		function onPageLoad() {
+			video = document.querySelector("#videoElement");
+			videoMirrored = false;
+			currentDeviceNumber = 0;
+			currentVideoStream = "";
+			// Before we can get a list of media devices we need to request media permissions from the browser...
+			navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 4096 }, height: { ideal: 2160 } } })
 				.then(function (devices) {
 					// ...then we can get a list of available media input/output devices...
 					navigator.mediaDevices.enumerateDevices()
-					.then(function (devices) {
-						// ...and trim that list down to just video cameras.
-						videoDevices = devices.filter(device => device.kind === 'videoinput');
-						startVideo(currentDeviceNumber);
-					})
-					.catch(function (theError) {
-						console.log(theError);
-					});
+						.then(function (devices) {
+							// ...and trim that list down to just video cameras.
+							videoDevices = devices.filter(device => device.kind === 'videoinput');
+							startVideo(currentDeviceNumber);
+						})
+						.catch(function (theError) {
+							console.log(theError);
+						});
 				})
 				.catch(function (theError) {
 					console.log(theError);
 				});
-			}
-			
-			// Connect to a specific camera.
-			function startVideo(videoDeviceNumber) {
-				if (navigator.mediaDevices.getUserMedia) {
-					// We set the mediaDevice constraints to an "ideal" 4K resolution, the browser will simply scale down to the best resolution available.
-					navigator.mediaDevices.getUserMedia({video:{width:{ideal:4096},height:{ideal:2160},deviceId:{exact:videoDevices[currentDeviceNumber]["deviceId"]}}})
+
+			var touchzone = document.getElementById("mycanvas");
+			touchzone.addEventListener("touchstart", draw, false);
+			touchzone.addEventListener("mousedown", drawMouse, false)
+		}
+
+		// Connect to a specific camera.
+		function startVideo(videoDeviceNumber) {
+			if (navigator.mediaDevices.getUserMedia) {
+				// We set the mediaDevice constraints to an "ideal" 4K resolution, the browser will simply scale down to the best resolution available.
+				navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 4096 }, height: { ideal: 2160 }, deviceId: { exact: videoDevices[currentDeviceNumber]["deviceId"] } } })
 					.then(function (stream) {
 						video.srcObject = stream;
 						currentVideoStream = stream;
@@ -83,57 +103,114 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 					.catch(function (theError) {
 						console.log(theError);
 					});
-				}
 			}
-			
-			// Called when the user clicks the "Full Screen" button.
-			function openFullscreen() {
-				if (video.requestFullscreen) {
-					video.requestFullscreen();
-				} else if (video.webkitRequestFullscreen) { /* Safari */
-					video.webkitRequestFullscreen();
-				} else if (video.msRequestFullscreen) { /* IE11 */
-					video.msRequestFullscreen();
-				}
+		}
+
+		// Called when the user clicks the "Full Screen" button.
+		function openFullscreen() {
+			if (video.requestFullscreen) {
+				video.requestFullscreen();
+			} else if (video.webkitRequestFullscreen) { /* Safari */
+				video.webkitRequestFullscreen();
+			} else if (video.msRequestFullscreen) { /* IE11 */
+				video.msRequestFullscreen();
 			}
-			
-			// Switches the input to the next camera in the list, or goes back round to the first one if we've hit the end of the list.
-			function changeInput() {
-				currentVideoStream.getTracks().forEach(function(track) {
-					track.stop();
-				});
-				video.srcObject = null;
-				currentDeviceNumber = currentDeviceNumber + 1;
-				if (currentDeviceNumber == videoDevices.length) {
-					currentDeviceNumber = 0;
-				}
-				startVideo(currentDeviceNumber);
+		}
+
+		// Switches the input to the next camera in the list, or goes back round to the first one if we've hit the end of the list.
+		function changeInput() {
+			currentVideoStream.getTracks().forEach(function (track) {
+				track.stop();
+			});
+			video.srcObject = null;
+			currentDeviceNumber = currentDeviceNumber + 1;
+			if (currentDeviceNumber == videoDevices.length) {
+				currentDeviceNumber = 0;
 			}
-			
-			// Mirror / unmirror the video preview pane.
-			function setMirror() {
-				if (videoMirrored) {
-					videoMirrored = false;
-					video.className = "videoUnmirrored";
-				} else {
-					videoMirrored = true;
-					video.className = "videoMirrored";
-				}
+			startVideo(currentDeviceNumber);
+		}
+
+		// Mirror / unmirror the video preview pane.
+		function setMirror() {
+			if (videoMirrored) {
+				videoMirrored = false;
+				video.className = "videoUnmirrored";
+			} else {
+				videoMirrored = true;
+				video.className = "videoMirrored";
 			}
-		</script>
-	</head>
-	<!-- The (very few) HTML elements that make up the page - two buttons and a video preview window. -->
-	<body onload="onPageLoad()">
-		<div style="text-align:center;">
-			<button class="videoButton" onclick="openFullscreen();">Full Screen</button>
-			<button class="videoButton" onclick="changeInput();">Change Input</button>
-			<button class="videoButton" onclick="setMirror();">Mirror Video</button>
+		}
+
+
+		function draw(event) {
+
+			var canvas = document.getElementById('mycanvas');
+			var offset = getOffset(canvas);
+			if (canvas.getContext) {
+				var ctx = canvas.getContext("2d");
+
+
+				ctx.fillStyle = '#ff0000';
+				ctx.fillRect(event.touches[0].pageX - offset.left, event.touches[0].pageY - offset.top, 5, 5);
+
+
+			}
+		}
+
+		function drawMouse(event) {
+
+			var canvas = document.getElementById('mycanvas');
+			var offset = getOffset(canvas);
+
+			if (canvas.getContext) {
+				var ctx = canvas.getContext("2d");
+
+				ctx.fillStyle = '#0000ff';
+				ctx.fillRect(event.pageX - offset.left, event.pageY - offset.top, 5, 5);
+
+			}
+		}
+
+		function getOffset(obj) {
+			var offsetLeft = 0;
+			var offsetTop = 0;
+			do {
+				if (!isNaN(obj.offsetLeft)) {
+					offsetLeft += obj.offsetLeft;
+				}
+				if (!isNaN(obj.offsetTop)) {
+					offsetTop += obj.offsetTop;
+				}
+			} while (obj = obj.offsetParent);
+			return { left: offsetLeft, top: offsetTop };
+		}
+	</script>
+</head>
+<!-- The (very few) HTML elements that make up the page - two buttons and a video preview window. -->
+
+<body onload="onPageLoad()" style="background-color: #303030;">
+	<div class="flex-container">
+		<div class="flex-child leftDiv">
+			<div style="text-align:center; height: 50px;">
+				<button class="videoButton" onclick="openFullscreen();">Full Screen</button>
+				<button class="videoButton" onclick="changeInput();">Change Input</button>
+				<button class="videoButton" onclick="setMirror();">Mirror Video</button>
+			</div>
+			<div id="videoContainer" class="videoContainer" style="background-color: #303030;">
+				<video autoplay="true" id="videoElement" class="videoUnmirrored"></video>
+			</div>
 		</div>
-		<div id="videoContainer" class="videoContainer">
-			<video autoplay="true" id="videoElement" class="videoUnmirrored"></video>
+		<div class="flex-child rightDiv" style="text-align:center;">
+			<div style="text-align:center; height: 50px;">
+				<button class="videoButton">Click and Touch Test Area</button>
+			</div>
+			<canvas id="mycanvas" width="500px" height="500px" style="background-color: #666;">
+				Canvas element not supported.
+			</canvas>
 		</div>
-		<div style="text-align:center;">
-			Documentation and source code available on <a href="https://github.com/dhicks6345789/pi-view">Github</a>.
-		</div>
-	</body>
+	</div>
+
+
+</body>
+
 </html>
