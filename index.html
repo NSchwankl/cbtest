@@ -10,7 +10,7 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>FullScreen Viewer</title>
+	<title>Chromebook Test Page</title>
 	<style>
 		.flex-container {
 			display: flex;
@@ -73,6 +73,7 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 			transition: width 100ms linear;
 		}
 	</style>
+
 	<script>
 		var video;
 		var videoDevices;
@@ -169,7 +170,7 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 
 
 				ctx.fillStyle = '#ff0000';
-				ctx.fillRect(event.touches[0].pageX - offset.left, event.touches[0].pageY - offset.top, 5, 5);
+				ctx.fillRect(event.touches[0].pageX - offset.left - 8, event.touches[0].pageY - offset.top - 8, 16, 16);
 
 
 			}
@@ -183,8 +184,8 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 			if (canvas.getContext) {
 				var ctx = canvas.getContext("2d");
 
-				ctx.fillStyle = '#0000ff';
-				ctx.fillRect(event.pageX - offset.left, event.pageY - offset.top, 5, 5);
+				ctx.fillStyle = '#00ff00';
+				ctx.fillRect(event.pageX - offset.left - 4, event.pageY - offset.top - 4, 8, 8);
 
 			}
 		}
