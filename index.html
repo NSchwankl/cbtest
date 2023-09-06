@@ -18,7 +18,6 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 
 		.flex-child {
 			flex: 1;
-			border: 2px solid yellow;
 			margin: 10px;
 			height: 600px;
 			width: 500px;
@@ -184,6 +183,46 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 			} while (obj = obj.offsetParent);
 			return { left: offsetLeft, top: offsetTop };
 		}
+
+		(async () => {
+			let volumeCallback = null;
+			let volumeInterval = null;
+			const volumeVisualizer = document.getElementById('volume-visualizer');
+			const startButton = document.getElementById('start');
+			const stopButton = document.getElementById('stop');
+			const audioStream = await navigator.mediaDevices.getUserMedia({
+				audio: {
+					echoCancellation: true
+				}
+			});
+			const audioContext = new AudioContext();
+			const audioSource = audioContext.createMediaStreamSource(audioStream);
+			const analyser = audioContext.createAnalyser();
+			analyser.fftSize = 512;
+			analyser.minDecibels = -127;
+			analyser.maxDecibels = 0;
+			analyser.smoothingTimeConstant = 0.4;
+			audioSource.connect(analyser);
+			const volumes = new Uint8Array(analyser.frequencyBinCount);
+			volumeCallback = () => {
+				analyser.getByteFrequencyData(volumes);
+				let volumeSum = 0;
+				for (const volume of volumes)
+					volumeSum += volume;
+				const averageVolume = volumeSum / volumes.length;
+				// Value range: 127 = analyser.maxDecibels - analyser.minDecibels;
+				volumeVisualizer.style.setProperty('--volume', (averageVolume * 100 / 127) + '%');
+			};
+			// Use
+			addEventListener('keyup', (e) => {
+				// Updating every 100ms (should be same as CSS transition speed)
+				if (e.key === 'Escape') {
+					if (volumeCallback !== null && volumeInterval === null)
+						volumeInterval = setInterval(volumeCallback, 100);
+				}
+			});
+		})();
+
 	</script>
 </head>
 <!-- The (very few) HTML elements that make up the page - two buttons and a video preview window. -->
@@ -204,6 +243,7 @@ This was very helpful in figuring out the details of how to use getUserMedia:
 			<div style="text-align:center; height: 50px;">
 				<button class="videoButton">Click and Touch Test Area</button>
 			</div>
+			<div id="volume-visualizer"></div>
 			<canvas id="mycanvas" width="500px" height="500px" style="background-color: #666;">
 				Canvas element not supported.
 			</canvas>
